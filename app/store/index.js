@@ -47,14 +47,14 @@ export const actions = {
     const res = await this.$axios.$get(
       `https://api.matsurihi.me/mltd/v1/lounges/search?name=${name}`
     )
-    if (res.length === 0) throw new Error('ラウンジがみつかりません')
+    if (res.length === 0) throw new Error()
     commit('setSearchResult', res)
   },
   async fetchLoungeData({ commit }, id) {
     const res = await this.$axios.$get(
       `https://api.matsurihi.me/mltd/v1/lounges/${id}`
     )
-    if (res.length === 0) throw new Error('取得できませんでした')
+    if (res.length === 0) throw new Error()
     commit('setLoungeData', res)
   }
 }
