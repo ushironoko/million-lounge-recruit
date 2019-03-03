@@ -59,7 +59,7 @@ export const actions = {
   },
   async hogehoge() {
     const res = await this.$axios.$get(
-      `https://asia-northeast1-million-lounge-recruit.cloudfunctions.net/default/v1/hoge`
+      `${process.env.FIREBASE_ENDPOINT}/hoge`
     )
     return res
   }
