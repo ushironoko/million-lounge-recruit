@@ -7,7 +7,7 @@
     >
       <div class="navbar-brand">
         <a class="navbar-item" href="/">
-          <img src="~assets/buefy.png" alt="Buefy" height="28" />
+          ミリシタ求人
         </a>
 
         <div class="navbar-burger">
@@ -20,7 +20,7 @@
 
     <section class="main-content columns">
       <aside class="column is-2 section">
-        <p class="menu-label is-hidden-touch">General</p>
+        <p class="menu-label is-hidden-touch">メニュー</p>
         <ul class="menu-list">
           <li v-for="(item, key) of items" :key="key">
             <nuxt-link :to="item.to" exact-active-class="is-active">
@@ -43,14 +43,19 @@ export default {
     return {
       items: [
         {
-          title: 'Home',
+          title: 'トップ求人',
           icon: 'home',
           to: { name: 'index' }
         },
         {
-          title: 'Inspire',
+          title: '求人を検索する',
           icon: 'lightbulb',
           to: { name: 'inspire' }
+        },
+        {
+          title: '求人を作る',
+          icon: 'view-dashboard',
+          to: { name: 'recruitRegister' }
         }
       ]
     }

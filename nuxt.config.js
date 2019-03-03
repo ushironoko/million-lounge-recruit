@@ -1,4 +1,5 @@
 const pkg = require('./package')
+require('dotenv').config()
 
 
 module.exports = {
@@ -31,6 +32,10 @@ module.exports = {
   css: [
   ],
 
+  router: {
+    middleware: 'authenticated'
+  },
+
   /*
   ** Plugins to load before mounting the App
   */
@@ -46,12 +51,25 @@ module.exports = {
     // Doc: https://buefy.github.io/#/documentation
     'nuxt-buefy',
     '@nuxtjs/pwa',
+    '@nuxtjs/dotenv',
   ],
   /*
   ** Axios module configuration
   */
   axios: {
     // See https://github.com/nuxt-community/axios-module#options
+  },
+
+  /*
+   ** dotenv settings
+   */
+  env: {
+    APIKEY: process.env.APIKEY,
+    AUTHDOMAIN: process.env.AUTHDOMAIN,
+    DATABASEURL: process.env.DATABASEURL,
+    PROJECTID: process.env.PROJECTID,
+    STORAGEBUCKET: process.env.STORAGEBUCKET,
+    MESSAGINGSENDERID: process.env.MESSAGINGSENDERID
   },
 
   /*
