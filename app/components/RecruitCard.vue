@@ -11,22 +11,35 @@
           <b-field label="ラウンジ名">
             <b-input v-model="name"></b-input>
           </b-field>
-          <button class="button is-primary is-medium" @click="fetchSearchLounge">
+          <button
+            class="button is-primary is-medium"
+            @click="fetchSearchLounge"
+          >
             ラウンジを検索する
           </button>
           <div v-if="searchLounge.length > 0">
-            <b-table :data="searchLounge" :columns="searchColumns"
-                      :selected.sync="selected" focusable></b-table>
+            <b-table
+              :data="searchLounge"
+              :columns="searchColumns"
+              :selected.sync="selected"
+              focusable
+            ></b-table>
 
             <b-field>
-              <button class="button is-primary is-medium" @click="fetchLoungeData">
+              <button
+                class="button is-primary is-medium"
+                @click="fetchLoungeData"
+              >
                 選択したラウンジ情報を取得
               </button>
             </b-field>
 
-          <div v-if="loungeData.length > 0">
-            <b-table :data="loungeData" :columns="loungeDataColumns"></b-table>
-          </div>
+            <div v-if="loungeData.length > 0">
+              <b-table
+                :data="loungeData"
+                :columns="loungeDataColumns"
+              ></b-table>
+            </div>
           </div>
         </div>
       </div>
@@ -75,7 +88,7 @@ export default {
           width: '40'
         }
       ],
-      selected:{}
+      selected: {}
     }
   },
   methods: {
@@ -97,7 +110,7 @@ export default {
         })
     },
     fetchLoungeData() {
-            this.$store
+      this.$store
         .dispatch('fetchLoungeData', this.selected.id)
         .then(res => {
           this.$toast.open({
@@ -116,12 +129,12 @@ export default {
   },
   computed: {
     selectedData() {
-      if(this.loungeData.length > 0){
+      if (this.loungeData.length > 0) {
         this.selected = this.loungeData
       }
       return []
     },
-    ...mapGetters(['searchLounge','loungeData'])
+    ...mapGetters(['searchLounge', 'loungeData'])
   }
 }
 </script>
