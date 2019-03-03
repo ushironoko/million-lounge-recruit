@@ -2,7 +2,7 @@
   <section class="section">
     <div class="columns is-mobile">
       <card title="Free" icon="github-circle">
-        Open source on <a href="https://github.com/buefy/buefy"> GitHub</a>
+        <button class="button is-primary is-medium" @click="hoge">hoge?</button>
       </card>
     </div>
   </section>
@@ -13,6 +13,12 @@ import Card from '~/components/Card'
 
 export default {
   name: 'HomePage',
+  methods: {
+    async hoge() {
+      const res = await this.$store.dispatch('hogehoge')
+      alert(res)
+    }
+  },
   components: {
     Card
   }

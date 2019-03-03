@@ -56,5 +56,11 @@ export const actions = {
     )
     if (res.length === 0) throw new Error()
     commit('setLoungeData', res)
+  },
+  async hogehoge() {
+    const res = await this.$axios.$get(
+      `https://asia-northeast1-million-lounge-recruit.cloudfunctions.net/default/v1/hoge`
+    )
+    return res
   }
 }
