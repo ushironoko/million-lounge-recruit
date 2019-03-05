@@ -6,7 +6,6 @@ export const strict = false
 
 export const state = () => ({
   user: null,
-  searchLounge: {},
   loungeData: []
 })
 
@@ -14,7 +13,6 @@ export const getters = {
   isAuthenticated(state) {
     return !!state.user
   },
-  searchLounge: state => state.searchLounge,
   loungeData: state => state.loungeData
 }
 
@@ -22,10 +20,8 @@ export const mutations = {
   setUser(state, payload) {
     state.user = payload
   },
-  setSearchResult(state, searchLounge) {
-    state.searchLounge = searchLounge
-  },
   setLoungeData(state, loungeData) {
+    state.loungeData = []
     state.loungeData.push(loungeData)
   }
 }
@@ -43,13 +39,6 @@ export const actions = {
   setUser({ commit }, payload) {
     commit('setUser', payload)
   },
-  async searchLounge({ commit }, name) {
-    const res = await this.$axios.$get(
-      `https://api.matsurihi.me/mltd/v1/lounges/search?name=${name}`
-    )
-    if (res.length === 0) throw new Error()
-    commit('setSearchResult', res)
-  },
   async fetchLoungeData({ commit }, id) {
     const res = await this.$axios.$get(
       `https://api.matsurihi.me/mltd/v1/lounges/${id}`
@@ -58,9 +47,7 @@ export const actions = {
     commit('setLoungeData', res)
   },
   async hogehoge() {
-    const res = await this.$axios.$get(
-      `${process.env.FIREBASE_ENDPOINT}/hoge`
-    )
+    const res = await this.$axios.$get(`${process.env.FIREBASE_ENDPOINT}/hoge`)
     return res
   }
 }

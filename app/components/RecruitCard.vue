@@ -9,37 +9,34 @@
       <div class="card-content">
         <div class="content has-text-centered">
           <b-field label="ラウンジ名">
-            <b-input v-model="name"></b-input>
+            <b-autocomplete
+              :data="data"
+              placeholder="ラウンジ名"
+              field="name"
+              :loading="isFetching"
+              @typing="searchLoungeAsync"
+              @select="option => (selected = option)"
+              size="is-small"
+            >
+              <template v-slot="props">
+                <div>
+                  {{ props.option.name }}
+                </div>
+              </template>
+            </b-autocomplete>
           </b-field>
-          <button
-            class="button is-primary is-medium"
-            @click="fetchSearchLounge"
-          >
-            ラウンジを検索する
-          </button>
-          <div v-if="searchLounge.length > 0">
-            <b-table
-              :data="searchLounge"
-              :columns="searchColumns"
-              :selected.sync="selected"
-              focusable
-            ></b-table>
 
-            <b-field>
-              <button
-                class="button is-primary is-medium"
-                @click="fetchLoungeData"
-              >
-                選択したラウンジ情報を取得
-              </button>
-            </b-field>
+          <b-field>
+            <button
+              class="button is-primary is-mobile"
+              @click="fetchLoungeData"
+            >
+              選択したラウンジで求人を作る
+            </button>
+          </b-field>
 
-            <div v-if="loungeData.length > 0">
-              <b-table
-                :data="loungeData"
-                :columns="loungeDataColumns"
-              ></b-table>
-            </div>
+          <div v-if="loungeData.length > 0">
+            <b-table :data="loungeData" :columns="loungeDataColumns"></b-table>
           </div>
         </div>
       </div>
@@ -49,6 +46,8 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import debounce from 'lodash/debounce'
+
 export default {
   props: {
     title: {
@@ -58,14 +57,9 @@ export default {
   },
   data() {
     return {
-      name: '',
-      searchColumns: [
-        {
-          field: 'name',
-          label: 'ラウンジ名',
-          width: '70'
-        }
-      ],
+      data: [],
+      selected: null,
+      isFetching: false,
       loungeDataColumns: [
         {
           field: 'name',
@@ -87,54 +81,61 @@ export default {
           label: 'ラウンジマスター',
           width: '40'
         }
-      ],
-      selected: {}
+      ]
     }
   },
   methods: {
-    fetchSearchLounge() {
-      this.$store
-        .dispatch('searchLounge', this.name)
-        .then(res => {
-          this.$toast.open({
-            message: 'ラウンジが見つかりました',
-            type: 'is-success'
-          })
+    searchLoungeAsync: debounce(async function(name) {
+      if (!name.length) {
+        this.data = []
+        return
+      }
+      this.isFetching = true
+      this.$axios
+        .get(`https://api.matsurihi.me/mltd/v1/lounges/search?name=${name}`)
+        .then(({ data }) => {
+          this.data = []
+          data.forEach(item => this.data.push(item))
         })
         .catch(error => {
-          this.$toast.open({
-            duration: 5000,
-            message: `${error}`,
-            type: 'is-danger'
-          })
+          this.data = []
+          throw error
         })
-    },
+        .finally(() => {
+          this.isFetching = false
+        })
+    }, 700),
+
     fetchLoungeData() {
-      this.$store
-        .dispatch('fetchLoungeData', this.selected.id)
-        .then(res => {
-          this.$toast.open({
-            message: 'ラウンジが見つかりました',
-            type: 'is-success'
+      try{
+        this.$store
+          .dispatch('fetchLoungeData', this.selected.id)
+          .then(res => {
+            this.$toast.open({
+              duration: 3000,
+              message: 'ラウンジ詳細がみつかりました',
+              type: 'is-success'
+            })
           })
-        })
-        .catch(error => {
-          this.$toast.open({
-            duration: 5000,
-            message: `${error}`,
-            type: 'is-danger'
+          .catch(error => {
+            this.$toast.open({
+              duration: 3000,
+              message: `${error}`,
+              type: 'is-danger'
+            })
           })
+      } catch {
+        this.$toast.open({
+          duration: 3000,
+          message: `検索できませんでした`,
+          type: 'is-danger'
         })
+      }
+
     }
   },
   computed: {
-    selectedData() {
-      if (this.loungeData.length > 0) {
-        this.selected = this.loungeData
-      }
-      return []
-    },
-    ...mapGetters(['searchLounge', 'loungeData'])
+    ...mapGetters(['loungeData'])
   }
 }
 </script>
