@@ -37,6 +37,7 @@
 
           <div v-if="loungeData.length > 0">
             <b-table :data="loungeData" :columns="loungeDataColumns"></b-table>
+            <b-table v-for="log in loungeRankingLog" :key="log.eventId" :data="log" :columns="loungeRankingLogColumns"></b-table>
           </div>
         </div>
       </div>
@@ -81,7 +82,29 @@ export default {
           label: 'ラウンジマスター',
           width: '40'
         }
-      ]
+      ],
+      loungeRankingLogColumns: [
+        {
+          field: 'eventName',
+          label: 'イベント名',
+          width: '70'
+        },
+        {
+          field: 'summaryTime',
+          label: '集計日時',
+          width: '30'
+        },
+        {
+          field: 'rank',
+          label: '最終順位',
+          width: '30'
+        },
+        {
+          field: 'score',
+          label: '最終累計スコア',
+          width: '70'
+        }
+      ],
     }
   },
   methods: {
@@ -107,10 +130,10 @@ export default {
     }, 700),
 
     fetchLoungeData() {
-      try{
+      try {
         this.$store
           .dispatch('fetchLoungeData', this.selected.id)
-          .then(res => {
+          .then(() => {
             this.$toast.open({
               duration: 3000,
               message: 'ラウンジ詳細がみつかりました',
@@ -124,6 +147,24 @@ export default {
               type: 'is-danger'
             })
           })
+
+        this.$store
+          .dispatch('fetchLoungeRankingLog', this.selected.id)
+          .then(() => {
+            this.$toast.open({
+              duration: 3000,
+              message: 'ラウンジ成績がみつかりました',
+              type: 'is-success'
+            })
+          })
+          .catch(error => {
+            this.$toast.open({
+              duration: 3000,
+              message: `${error}`,
+              type: 'is-danger'
+            })
+          })
+
       } catch {
         this.$toast.open({
           duration: 3000,
@@ -131,11 +172,10 @@ export default {
           type: 'is-danger'
         })
       }
-
     }
   },
   computed: {
-    ...mapGetters(['loungeData'])
+    ...mapGetters(['loungeData','loungeRankingLog'])
   }
 }
 </script>
