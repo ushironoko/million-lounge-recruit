@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import RecruitCard from '~/components/RecruitCard'
+import RecruitCard from '@/components/RecruitCard'
 export default {
   computed: {
     title: () => {

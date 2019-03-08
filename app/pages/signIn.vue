@@ -17,11 +17,11 @@ export default {
   },
   async mounted() {
     let user = await auth()
-    this.$store.dispatch('setUser', user)
+    this.$store.dispatch('firebase/setUser', user)
     if (user) {
       this.$router.push('/recruitRegister')
     } else {
-      this.$store.dispatch('callAuth')
+      this.$store.dispatch('firebase/callAuth')
     }
   }
 }
