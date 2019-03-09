@@ -1,43 +1,115 @@
 <template>
   <div class="column">
-    <div class="card">
+    <div class="card" style="max-width: 980px;">
       <header class="card-header">
-        <p class="card-header-title has-text-grey">
-          {{ title }}
-        </p>
+        <b-field style="padding: 10px;">
+          <b-autocomplete
+            :data="data"
+            placeholder="ラウンジを検索"
+            field="name"
+            :loading="isFetching"
+            @typing="searchLoungeAsync"
+            @select="option => (selected = option)"
+            style="min-width: 250px;"
+          >
+            <template v-slot="props">
+              <div>
+                {{ props.option.name }}
+              </div>
+            </template>
+          </b-autocomplete>
+
+          <button class="button is-primary is-mobile" @click="fetchLoungeData">
+            <b-icon icon="magnify" size="is-small"> </b-icon>
+          </button>
+        </b-field>
       </header>
       <div class="card-content">
         <div class="content has-text-centered">
-          <b-field label="ラウンジ名">
-            <b-autocomplete
-              :data="data"
-              placeholder="ラウンジ名"
-              field="name"
-              :loading="isFetching"
-              @typing="searchLoungeAsync"
-              @select="option => (selected = option)"
-              size="is-small"
+          <div v-if="loungeData.length > 0">
+            <b-table :data="loungeData">
+              <template v-slot="props">
+                <b-table-column
+                  field="name"
+                  label="ラウンジ名"
+                >
+                  {{ props.row.name }}
+                </b-table-column>
+                <b-table-column
+                  field="viewerId"
+                  label="ID"
+                >
+                  {{ props.row.viewerId }}
+                </b-table-column>
+                <b-table-column
+                  field="masterName"
+                  label="ラウマス"
+                >
+                  {{ props.row.masterName }}
+                </b-table-column>
+                <b-table-column
+                  field="comment"
+                  label="コメント"
+                >
+                  {{ props.row.comment }}
+                </b-table-column>
+              </template>
+            </b-table>
+
+            <b-table
+              class="ranking-table"
+              v-for="log in loungeRankingLog"
+              :key="log.eventId"
+              :data="log"
+              :paginated="true"
+              per-page="5"
+              :pagination-simple="true"
+              default-sort-direction="desc"
+              default-sort="summaryTime"
             >
               <template v-slot="props">
-                <div>
-                  {{ props.option.name }}
-                </div>
+                <b-table-column
+                  field="rank"
+                  label="順位"
+                  width="10"
+                  sortable
+                  numeric
+                >
+                  {{ props.row.rank }}
+                </b-table-column>
+                <b-table-column
+                  field="eventName"
+                  label="イベント"
+                  width="130"
+                  sortable
+                >
+                  {{ props.row.eventName }}
+                </b-table-column>
+                <b-table-column
+                  field="score"
+                  label="累計スコア"
+                  width="30"
+                  sortable
+                  numeric
+                >
+                  {{ props.row.score }}
+                </b-table-column>
+                <b-table-column
+                  field="summaryTime"
+                  label="集計日"
+                  width="10"
+                  sortable
+                >
+                  {{ props.row.summaryTime }}
+                </b-table-column>
               </template>
-            </b-autocomplete>
-          </b-field>
-
-          <b-field>
+            </b-table>
             <button
               class="button is-primary is-mobile"
-              @click="fetchLoungeData"
+              @click="registerRecruitOnFirebase"
             >
-              選択したラウンジで求人を作る
+              このラウンジの求人ページを作る
             </button>
-          </b-field>
-
-          <div v-if="loungeData.length > 0">
-            <b-table :data="loungeData" :columns="loungeDataColumns"></b-table>
-            <b-table v-for="log in loungeRankingLog" :key="log.eventId" :data="log" :columns="loungeRankingLogColumns"></b-table>
           </div>
         </div>
       </div>
@@ -48,63 +120,15 @@
 <script>
 import { mapGetters } from 'vuex'
 import debounce from 'lodash/debounce'
+import cloneDeep from 'lodash/cloneDeep'
+import dayjs from 'dayjs'
 
 export default {
-  props: {
-    title: {
-      type: String,
-      required: true
-    }
-  },
   data() {
     return {
       data: [],
       selected: null,
-      isFetching: false,
-      loungeDataColumns: [
-        {
-          field: 'name',
-          label: 'ラウンジ名',
-          width: '50'
-        },
-        {
-          field: 'viewerId',
-          label: 'id',
-          width: '30'
-        },
-        {
-          field: 'comment',
-          label: 'コメント',
-          width: '100'
-        },
-        {
-          field: 'masterName',
-          label: 'ラウンジマスター',
-          width: '40'
-        }
-      ],
-      loungeRankingLogColumns: [
-        {
-          field: 'eventName',
-          label: 'イベント名',
-          width: '70'
-        },
-        {
-          field: 'summaryTime',
-          label: '集計日時',
-          width: '30'
-        },
-        {
-          field: 'rank',
-          label: '最終順位',
-          width: '30'
-        },
-        {
-          field: 'score',
-          label: '最終累計スコア',
-          width: '70'
-        }
-      ],
+      isFetching: false
     }
   },
   methods: {
@@ -127,8 +151,7 @@ export default {
         .finally(() => {
           this.isFetching = false
         })
-    }, 700),
-
+    }, 300),
     fetchLoungeData() {
       try {
         this.$store
@@ -164,7 +187,6 @@ export default {
               type: 'is-danger'
             })
           })
-
       } catch {
         this.$toast.open({
           duration: 3000,
@@ -172,10 +194,32 @@ export default {
           type: 'is-danger'
         })
       }
+    },
+    registerRecruitOnFirebase() {
+      const cloneData = cloneDeep(this.loungeData)
+      const cloneRankingLog = cloneDeep(this.loungeRankingLog)
+      const cloneUser = cloneDeep(this.user)
+
+      const post = {
+        lounge_data: cloneData,
+        lounge_rankingLog: cloneRankingLog,
+        create_user: cloneUser.uid
+      }
+      console.log(post)
     }
   },
   computed: {
-    ...mapGetters(['loungeData','loungeRankingLog'])
+    ...mapGetters({
+      loungeData: 'loungeData',
+      loungeRankingLog: 'loungeRankingLog',
+      user: 'firebase/user'
+    })
   }
 }
 </script>
+
+<style scoped>
+.ranking-table {
+  margin-top: 20px;
+}
+</style>

@@ -55,7 +55,7 @@ export default {
         {
           title: '求人を作る',
           icon: 'view-dashboard',
-          to: { name: 'recruitRegister' }
+          to: { name: 'user-recruitRegister' }
         }
       ]
     }

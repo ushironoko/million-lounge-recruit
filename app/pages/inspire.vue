@@ -4,15 +4,6 @@
       <card title="" icon="cogs" type="fa">
         工事中
       </card>
-      <card title="" icon="cogs" type="fa">
-        工事中
-      </card>
-      <card title="" icon="cogs" type="fa">
-        工事中
-      </card>
-      <card title="" icon="cogs" type="fa">
-        工事中
-      </card>
     </div>
   </section>
 </template>

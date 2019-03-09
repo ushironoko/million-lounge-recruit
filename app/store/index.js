@@ -9,7 +9,7 @@ export const state = () => ({
 
 export const getters = {
   loungeData: state => state.loungeData,
-  loungeRankingLog: state => state.loungeRankingLog,
+  loungeRankingLog: state => state.loungeRankingLog
 }
 
 export const mutations = {
@@ -20,7 +20,9 @@ export const mutations = {
 
   setLoungeRankingLog(state, loungeRankingLog) {
     loungeRankingLog.map(item => {
-      item.summaryTime = dayjs(`${item.summaryTime}`).format('YYYY-MM-DD HH:mm:ss')
+      item.summaryTime = dayjs(`${item.summaryTime}`).format(
+        'YYYY-MM-DD HH:mm:ss'
+      )
     })
 
     state.loungeRankingLog = []

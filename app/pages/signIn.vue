@@ -1,6 +1,10 @@
 <template>
   <section>
-    <b-loading :is-full-page="isFullPage" :active.sync="isLoading" :can-cancel="false"></b-loading>
+    <b-loading
+      :is-full-page="isFullPage"
+      :active.sync="isLoading"
+      :can-cancel="false"
+    ></b-loading>
   </section>
 </template>
 
@@ -19,7 +23,7 @@ export default {
     let user = await auth()
     this.$store.dispatch('firebase/setUser', user)
     if (user) {
-      this.$router.push('/recruitRegister')
+      this.$router.push('/user/recruitRegister')
     } else {
       this.$store.dispatch('firebase/callAuth')
     }
