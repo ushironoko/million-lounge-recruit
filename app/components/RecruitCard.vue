@@ -27,30 +27,21 @@
       <div class="card-content">
         <div class="content has-text-centered">
           <div v-if="loungeData.length > 0">
+
+            <uploader />
+
             <b-table :data="loungeData">
               <template v-slot="props">
-                <b-table-column
-                  field="name"
-                  label="ラウンジ名"
-                >
+                <b-table-column field="name" label="ラウンジ名">
                   {{ props.row.name }}
                 </b-table-column>
-                <b-table-column
-                  field="viewerId"
-                  label="ID"
-                >
+                <b-table-column field="viewerId" label="ID">
                   {{ props.row.viewerId }}
                 </b-table-column>
-                <b-table-column
-                  field="masterName"
-                  label="ラウマス"
-                >
+                <b-table-column field="masterName" label="ラウマス">
                   {{ props.row.masterName }}
                 </b-table-column>
-                <b-table-column
-                  field="comment"
-                  label="コメント"
-                >
+                <b-table-column field="comment" label="コメント">
                   {{ props.row.comment }}
                 </b-table-column>
               </template>
@@ -118,6 +109,7 @@
 </template>
 
 <script>
+import Uploader from '@/components/uploader'
 import { mapGetters } from 'vuex'
 import debounce from 'lodash/debounce'
 import cloneDeep from 'lodash/cloneDeep'
@@ -214,6 +206,9 @@ export default {
       loungeRankingLog: 'loungeRankingLog',
       user: 'firebase/user'
     })
+  },
+  components: {
+    Uploader
   }
 }
 </script>
