@@ -63,7 +63,7 @@ export default {
   },
   watch: {
     dropFiles() {
-      const payload = this.dropFiles[0]
+      const payload = this.dropFiles[0] || []
       this.$store.dispatch('updatePRImage', payload)
     }
   }

@@ -38,9 +38,11 @@
 
             <uploader @onFileName="fileName" />
 
-            <b-switch v-model="isId">
-              IDの表示
-            </b-switch>
+            <div style="padding: 10px;">
+              <b-switch v-model="isId">
+                IDの表示
+              </b-switch>
+            </div>
 
             <b-table :data="loungeData">
               <template v-slot="props">
@@ -209,9 +211,10 @@ export default {
       const post = {
         lounge_data: cloneData,
         lounge_rankingLog: cloneRankingLog,
-        pr_image_name: `${cloneUser.uid}_${this.prImage.name}`,
+        pr_image_name: this.prImage.name ? `${cloneUser.uid}_${this.prImage.name}` : null,
         is_id_show: this.isId,
-        create_user: cloneUser.uid
+        create_user: cloneUser.uid,
+        create_at: new Date()
       }
       console.log(post)
     }
