@@ -51,7 +51,7 @@ export default {
       this.dropFiles.splice(index, 1)
     },
     handleFileUpload() {
-      const img =  new Image()
+      const img = new Image()
       const reader = new FileReader()
       reader.onload = function() {
         img.src = reader.result
@@ -59,6 +59,12 @@ export default {
         el.appendChild(img)
       }
       reader.readAsDataURL(this.dropFiles[0])
+    }
+  },
+  watch: {
+    dropFiles() {
+      const payload = this.dropFiles[0]
+      this.$store.dispatch('updatePRImage', payload)
     }
   }
 }

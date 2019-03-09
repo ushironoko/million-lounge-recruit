@@ -27,22 +27,37 @@
       <div class="card-content">
         <div class="content has-text-centered">
           <div v-if="loungeData.length > 0">
+            <div style="padding-bottom: 10px;">
+              <button
+                class="button is-primary is-mobile"
+                @click="registerRecruitOnFirebase"
+              >
+                このラウンジの求人ページを作る
+              </button>
+            </div>
 
-            <uploader />
+            <uploader @onFileName="fileName" />
+
+            <b-switch v-model="isId">
+              IDの表示
+            </b-switch>
 
             <b-table :data="loungeData">
               <template v-slot="props">
                 <b-table-column field="name" label="ラウンジ名">
                   {{ props.row.name }}
                 </b-table-column>
-                <b-table-column field="viewerId" label="ID">
-                  {{ props.row.viewerId }}
-                </b-table-column>
                 <b-table-column field="masterName" label="ラウマス">
                   {{ props.row.masterName }}
                 </b-table-column>
+                <b-table-column field="userCount" label="人数">
+                  {{ props.row.userCount }}
+                </b-table-column>
                 <b-table-column field="comment" label="コメント">
                   {{ props.row.comment }}
+                </b-table-column>
+                <b-table-column v-if="isId" field="viewerId" label="ID">
+                  <span v-if="isId">{{ props.row.viewerId }}</span>
                 </b-table-column>
               </template>
             </b-table>
@@ -95,12 +110,6 @@
                 </b-table-column>
               </template>
             </b-table>
-            <button
-              class="button is-primary is-mobile"
-              @click="registerRecruitOnFirebase"
-            >
-              このラウンジの求人ページを作る
-            </button>
           </div>
         </div>
       </div>
@@ -120,10 +129,15 @@ export default {
     return {
       data: [],
       selected: null,
-      isFetching: false
+      isFetching: false,
+      isId: false,
+      fileName: ''
     }
   },
   methods: {
+    onFineName(filename) {
+      this.fileName = filename
+    },
     searchLoungeAsync: debounce(async function(name) {
       if (!name.length) {
         this.data = []
@@ -195,6 +209,8 @@ export default {
       const post = {
         lounge_data: cloneData,
         lounge_rankingLog: cloneRankingLog,
+        pr_image_name: `${cloneUser.uid}_${this.prImage.name}`,
+        is_id_show: this.isId,
         create_user: cloneUser.uid
       }
       console.log(post)
@@ -204,7 +220,8 @@ export default {
     ...mapGetters({
       loungeData: 'loungeData',
       loungeRankingLog: 'loungeRankingLog',
-      user: 'firebase/user'
+      user: 'firebase/user',
+      prImage: 'prImage'
     })
   },
   components: {

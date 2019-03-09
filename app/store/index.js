@@ -4,12 +4,14 @@ export const strict = false
 
 export const state = () => ({
   loungeData: [],
-  loungeRankingLog: []
+  loungeRankingLog: [],
+  prImage: []
 })
 
 export const getters = {
   loungeData: state => state.loungeData,
-  loungeRankingLog: state => state.loungeRankingLog
+  loungeRankingLog: state => state.loungeRankingLog,
+  prImage: state => state.prImage
 }
 
 export const mutations = {
@@ -27,6 +29,10 @@ export const mutations = {
 
     state.loungeRankingLog = []
     state.loungeRankingLog.push(loungeRankingLog)
+  },
+
+  setPRImage(state, prImage) {
+    state.prImage = prImage
   }
 }
 
@@ -35,7 +41,6 @@ export const actions = {
     const res = await this.$axios.$get(
       `https://api.matsurihi.me/mltd/v1/lounges/${id}`
     )
-    if (res.length === 0) throw new Error()
     commit('setLoungeData', res)
   },
 
@@ -43,7 +48,10 @@ export const actions = {
     const res = await this.$axios.$get(
       `https://api.matsurihi.me/mltd/v1/lounges/${id}/eventHistory`
     )
-    if (res.length === 0) throw new Error()
     commit('setLoungeRankingLog', res)
+  },
+
+  async updatePRImage({ commit }, payload) {
+    commit('setPRImage', payload)
   }
 }
