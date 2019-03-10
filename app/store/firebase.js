@@ -6,7 +6,7 @@ export const strict = false
 
 export const state = () => ({
   user: null,
-  myRecruit: {}
+  myRecruit: []
 })
 
 export const getters = {
@@ -21,7 +21,14 @@ export const mutations = {
   },
 
   setMyRecruit(state, payload) {
-    state.myRecruit = payload
+    const recruit = {
+      loungeData: payload.lounge_data,
+      loungeRankingLog: payload.lounge_rankingLog,
+      prImageName: payload.pr_image_name,
+      isIdShow: payload.is_id_show,
+      createAt: payload.create_at
+    }
+    state.myRecruit.push(recruit)
   }
 }
 

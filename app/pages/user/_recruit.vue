@@ -3,10 +3,10 @@
     <div class="card" style="max-width: 980px;">
       <div class="card-content">
         <div class="content has-text-centered">
-          <b-table :data="myRecruit">
+          <b-table :data="myRecruit[0].loungeData">
             <template v-slot="props">
               <b-table-column field="name" label="ラウンジ名">
-                {{ props.row.lounge_rankingLog.name }}
+                {{ props.row.name }}
               </b-table-column>
               <b-table-column field="masterName" label="ラウマス">
                 {{ props.row.masterName }}
@@ -18,20 +18,20 @@
                 {{ props.row.comment }}
               </b-table-column>
               <b-table-column
-                v-if="props.is_id_show"
+                v-if="props.row.isIdShow"
                 field="viewerId"
                 label="ID"
               >
-                <span v-if="props.is_id_show">{{ props.row.viewerId }}</span>
+                <span v-if="props.row.isIdShow">{{ props.row.viewerId }}</span>
               </b-table-column>
             </template>
           </b-table>
 
-          <!-- <b-table
+          <b-table
             class="ranking-table"
-            v-for="log in myRecruit"
-            :key="log.lounge_rankingLog.eventId"
-            :data="log.lounge_rankingLog"
+            v-for="log in myRecruit[0].loungeRankingLog"
+            :key="log.eventId"
+            :data="log"
             :paginated="true"
             per-page="5"
             :pagination-simple="true"
@@ -74,7 +74,7 @@
                 {{ props.row.summaryTime }}
               </b-table-column>
             </template>
-          </b-table> -->
+          </b-table>
         </div>
       </div>
     </div>
@@ -90,7 +90,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      myRecruit: 'firebase/myRecruit',
+      myRecruit: 'firebase/myRecruit'
     })
   }
 }
