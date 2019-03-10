@@ -5,17 +5,23 @@ const provider = new firebase.auth.TwitterAuthProvider()
 export const strict = false
 
 export const state = () => ({
-  user: null
+  user: null,
+  myRecruit: {}
 })
 
 export const getters = {
   isAuthenticated: state => !!state.user,
-  user: state => state.user
+  user: state => state.user,
+  myRecruit: state => state.myRecruit
 }
 
 export const mutations = {
   setUser(state, payload) {
     state.user = payload
+  },
+
+  setMyRecruit(state, payload) {
+    state.myRecruit = payload
   }
 }
 
@@ -34,10 +40,27 @@ export const actions = {
     commit('setUser', payload)
   },
 
-  async publishRecruit({ commit }, payload) {},
+  async publishRecruit({ state }, payload) {
+    return new Promise((resolve, reject) => {
+      firebase
+        .auth()
+        .currentUser.getIdToken(/* forceRefresh */ true)
+        .then(async idToken => {
+          await this.$axios
+            .$put(
+              `/recruits/${state.user.uid}/recruit.json?auth=${idToken}`,
+              payload
+            )
+            .then(() => resolve())
+        })
+        .catch(function(error) {
+          reject()
+        })
+    })
+  },
 
-  async hogehoge() {
-    const res = await this.$axios.$get(`${process.env.FIREBASE_ENDPOINT}/hoge`)
-    return res
+  async fetchMyRecruit({ commit }, uid) {
+    const res = await this.$axios.$get(`/recruits/${uid}/recruit.json`)
+    commit('setMyRecruit', res)
   }
 }

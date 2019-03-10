@@ -30,7 +30,7 @@
             <div style="padding-bottom: 10px;">
               <button
                 class="button is-primary is-mobile"
-                @click="registerRecruitOnFirebase"
+                @click="registerRecruitOnStore"
               >
                 このラウンジの求人ページを作る
               </button>
@@ -125,6 +125,7 @@ import { mapGetters } from 'vuex'
 import debounce from 'lodash/debounce'
 import cloneDeep from 'lodash/cloneDeep'
 import dayjs from 'dayjs'
+import { error } from 'util'
 
 export default {
   data() {
@@ -166,14 +167,14 @@ export default {
           .dispatch('fetchLoungeData', this.selected.id)
           .then(() => {
             this.$toast.open({
-              duration: 3000,
+              duration: 1000,
               message: 'ラウンジ詳細がみつかりました',
               type: 'is-success'
             })
           })
           .catch(error => {
             this.$toast.open({
-              duration: 3000,
+              duration: 1000,
               message: `${error}`,
               type: 'is-danger'
             })
@@ -183,14 +184,14 @@ export default {
           .dispatch('fetchLoungeRankingLog', this.selected.id)
           .then(() => {
             this.$toast.open({
-              duration: 3000,
+              duration: 1000,
               message: 'ラウンジ成績がみつかりました',
               type: 'is-success'
             })
           })
           .catch(error => {
             this.$toast.open({
-              duration: 3000,
+              duration: 1000,
               message: `${error}`,
               type: 'is-danger'
             })
@@ -203,20 +204,43 @@ export default {
         })
       }
     },
-    registerRecruitOnFirebase() {
-      const cloneData = cloneDeep(this.loungeData)
-      const cloneRankingLog = cloneDeep(this.loungeRankingLog)
-      const cloneUser = cloneDeep(this.user)
+    async registerRecruitOnStore() {
+      try {
+        const cloneData = cloneDeep(this.loungeData)
+        const cloneRankingLog = cloneDeep(this.loungeRankingLog)
+        const cloneUser = cloneDeep(this.user)
 
-      const post = {
-        lounge_data: cloneData,
-        lounge_rankingLog: cloneRankingLog,
-        pr_image_name: this.prImage.name ? `${cloneUser.uid}_${this.prImage.name}` : null,
-        is_id_show: this.isId,
-        create_user: cloneUser.uid,
-        create_at: new Date()
+        const post = {
+          lounge_data: cloneData,
+          lounge_rankingLog: cloneRankingLog,
+          pr_image_name: this.prImage.name ? `${this.prImage.name}` : null,
+          is_id_show: this.isId,
+          create_at: new Date()
+        }
+
+        await this.$store
+          .dispatch('firebase/publishRecruit', post)
+          .then(() => {
+            this.$toast.open({
+              duration: 3000,
+              message: '求人を登録しました！',
+              type: 'is-success'
+            })
+            this.$router.push({
+              name: 'user-recruit',
+              params: { recruit: this.user.uid }
+            })
+          })
+          .catch(error => {
+            this.$toast.open({
+              duration: 3000,
+              message: '登録できませんでした。',
+              type: 'is-danger'
+            })
+          })
+      } catch (error) {
+        console.log(error)
       }
-      console.log(post)
     }
   },
   computed: {
