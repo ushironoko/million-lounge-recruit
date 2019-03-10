@@ -2,7 +2,7 @@
   <div class="column">
     <div class="card" style="max-width: 980px;">
       <div class="card-content">
-        <div class="content has-text-centered">
+        <div v-if="myRecruit.length !== 0" class="content has-text-centered">
           <b-table :data="myRecruit[0].loungeData">
             <template v-slot="props">
               <b-table-column field="name" label="ラウンジ名">
@@ -18,11 +18,13 @@
                 {{ props.row.comment }}
               </b-table-column>
               <b-table-column
-                v-if="props.row.isIdShow"
+                v-if="myRecruit[0].isIdShow"
                 field="viewerId"
                 label="ID"
               >
-                <span v-if="props.row.isIdShow">{{ props.row.viewerId }}</span>
+                <span v-if="myRecruit[0].isIdShow">{{
+                  props.row.viewerId
+                }}</span>
               </b-table-column>
             </template>
           </b-table>
