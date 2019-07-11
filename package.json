@@ -20,7 +20,7 @@
     "cross-env": "^5.2.0",
     "dayjs": "^1.8.8",
     "firebase": "^5.8.5",
-    "lodash": "^4.17.13",
+    "lodash": "^4.17.14",
     "nuxt": "^2.4.0",
     "nuxt-buefy": "^0.3.2",
     "vuex-persistedstate": "^2.5.4"
